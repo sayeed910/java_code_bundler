@@ -1,0 +1,57 @@
+ private File sourceDirectory;
+    private File mainClass;
+    private Bundler codeBundler;
+
+
+    public static void main(String[] args) {
+       launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        setSourceDirectoryAndMainFile(getParameters().getRaw());
+        codeBundler = Bundler.create(sourceDirectory, mainClass);
+        codeBundler.bundle();
+    }
+
+    private void setSourceDirectoryAndMainFile(List<String> args) {
+        if (args == null || args.size() < 3){
+            setSourceDirectoryAndMainFileUsingFileChooser();
+        } else{
+            setSourceDirectoryAndMainFileUsingArguments(args);
+        }
+    }
+
+    private void setSourceDirectoryAndMainFileUsingFileChooser() {
+        sourceDirectory = showDirectoryChooserAndGetDirectory();
+        mainClass = showFileChooserAndGetMainClassFile();
+    }
+
+    private void setSourceDirectoryAndMainFileUsingArguments(List<String> args) {
+        sourceDirectory = new File(args.get(1));
+        mainClass = new File(args.get(2));
+    }
+
+    private File showDirectoryChooserAndGetDirectory() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select Source Directory");
+        File directory = chooser.showDialog(null);
+
+        if (directory == null) { System.exit(0); return null;}
+        else return directory;
+    }
+
+    private File showFileChooserAndGetMainClassFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select Main Class");
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Java Source Files", "*.java"));
+        File mainFile = chooser.showOpenDialog(null);
+
+        if (mainFile == null) { System.exit(0); return null;}
+        else return mainFile;
+    }
+
+    public Bundler getBundler() {
+        return codeBundler;
+    }

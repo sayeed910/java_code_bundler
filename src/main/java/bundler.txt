@@ -11,16 +11,23 @@ public class Bundler {
         this.sourceDirectory = sourceDirectory;
         this.mainSourceFile = mainSourceFile;
     }
-
-    public static Bundler create(){
-
-    }
-
-    public static Bundler withSourceDirectoryAndMainFile(File sourceDirectory, File mainSourceFile){
+    public static Bundler create(File sourceDirectory, File mainSourceFile){
         assert sourceDirectory != null;
         assert mainSourceFile != null;
 
         if (!sourceDirectory.isDirectory()) throw new IllegalArgumentException("Not a directory");
         return new Bundler(sourceDirectory, mainSourceFile);
+    }
+
+    public void bundle() {
+
+    }
+
+    public String getSourceDirectoryPath() {
+        return sourceDirectory.getAbsolutePath();
+    }
+
+    public String getMainSourceFilePath() {
+        return mainSourceFile.getAbsolutePath();
     }
 }
