@@ -12,7 +12,7 @@ public class BundlerFactory {
         File sourceDir = getDirectoryFromString(args[1]);
         File mainClassFile = getFileFromString(sourceDir.getAbsolutePath() + File.separator + args[2]);
 
-        return Bundler.create(sourceDir, mainClassFile);
+        return Bundler.create(sourceDir, mainClassFile, new FileDataExtractor());
     }
 
     private File getDirectoryFromString(String path) {

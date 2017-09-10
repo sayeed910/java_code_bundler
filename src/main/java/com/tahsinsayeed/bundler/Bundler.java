@@ -7,15 +7,17 @@ class Bundler{
 
     private final File sourceDir;
     private final File mainClassFile;
+    private final FileDataExtractor extractor;
     private File[] filesInSourceDir;
 
-    public Bundler(File sourceDirectory, File mainClassFile) {
+    public Bundler(File sourceDirectory, File mainClassFile, FileDataExtractor extractor) {
         this.sourceDir = sourceDirectory;
         this.mainClassFile = mainClassFile;
+        this.extractor = extractor;
     }
 
-    public static Bundler create(File sourceDir, File mainClassFile) {
-        return new Bundler(sourceDir, mainClassFile);
+    public static Bundler create(File sourceDir, File mainClassFile, FileDataExtractor extractor) {
+        return new Bundler(sourceDir, mainClassFile, extractor);
     }
 
     public String getSourceDirPath() {
@@ -26,11 +28,31 @@ class Bundler{
         return mainClassFile.getAbsolutePath();
     }
 
-    public File[] bundle() {
+    public String bundle() {
         //TODO: Add support for bundling files inside subdirectory
-        filesInSourceDir = sourceDir.listFiles((file, s) -> s.endsWith("java"));
+        StringBuilder header = new StringBuilder();
+        StringBuilder content = new StringBuilder();
+        StringBuilder fullData = new StringBuilder();
 
-        return filesInSourceDir;
+        FileData mainData = extractor.extractFileDataFromMainFile(mainClassFile.toPath());
+        header.append(mainData.header);
+        content.append(mainData.content);
+
+
+        filesInSourceDir = sourceDir.listFiles((file, s) -> s.endsWith(".java"));
+
+
+
+        for (File currentFile: filesInSourceDir){
+              if (!currentFile.equals(mainClassFile)){
+                  FileData data = extractor.extractFileData(currentFile.toPath());
+                  header.append(data.header);
+                  content.append(data.content);
+              }
+        }
+
+
+        return fullData.append(header).append(content).toString();
     }
 }
 

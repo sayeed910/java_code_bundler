@@ -8,6 +8,7 @@ import java.io.File;
 
 import static org.junit.Assert.*;
 
+
 public class BundlerFactoryTest {
 
     private Bundler bundler;
@@ -17,6 +18,7 @@ public class BundlerFactoryTest {
 
     @Test
     public void testCreateBundler_Proper_DirPath() throws Exception {
+
         String[] args = {"App", sourceDirPath + File.separator, mainClassFileName};
 
         bundler = new BundlerFactory().createBundler(args);
