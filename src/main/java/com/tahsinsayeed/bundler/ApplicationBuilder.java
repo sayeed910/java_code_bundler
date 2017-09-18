@@ -1,22 +1,45 @@
 package com.tahsinsayeed.bundler;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Logger;
 
 class ApplicationBuilder {
+    private static final Logger logger = Logger.getLogger(ApplicationBuilder.class.getName());
+
+    static {
+        logger.addHandler(new ConsoleHandler());
+    }
+
     private final String[] commandlineArgs;
 
-    ApplicationBuilder(String[] args){
+    ApplicationBuilder(String[] args) {
         commandlineArgs = args;
     }
 
-    App build(){
-        return new App(null, null);
+    App build() throws IOException {
+        Bundler codeBundler = createBundler();
+        FileWriter codeWriter = new FileWriter(getOutputFile());
+
+        return new App(codeBundler, codeWriter);
+    }
+
+    private File getOutputFile() {
+        File outputFile = new File(commandlineArgs[2]);
+        if (outputFile.exists()) {
+            outputFile = new File("Output.java");
+        }
+
+        return outputFile;
     }
 
 
     Bundler createBundler() {
 
-        if (commandlineArgs == null) throw new IllegalArgumentException("Source directory and main file are not provided.");
+        if (commandlineArgs == null)
+            throw new IllegalArgumentException("Source directory and main file are not provided.");
 
         File sourceDir = getDirectoryFromString(commandlineArgs[1]);
         File mainClassFile = getFileFromString(sourceDir.getAbsolutePath() + File.separator + commandlineArgs[2]);
