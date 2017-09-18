@@ -2,15 +2,24 @@ package com.tahsinsayeed.bundler;
 
 import java.io.File;
 
-public class BundlerFactory {
+class ApplicationBuilder {
+    private final String[] commandlineArgs;
+
+    ApplicationBuilder(String[] args){
+        commandlineArgs = args;
+    }
+
+    App build(){
+        return new App(null, null);
+    }
 
 
-    public Bundler createBundler(String[] args) {
+    Bundler createBundler() {
 
-        if (args == null) throw new IllegalArgumentException("Source directory and main file are not provided.");
+        if (commandlineArgs == null) throw new IllegalArgumentException("Source directory and main file are not provided.");
 
-        File sourceDir = getDirectoryFromString(args[1]);
-        File mainClassFile = getFileFromString(sourceDir.getAbsolutePath() + File.separator + args[2]);
+        File sourceDir = getDirectoryFromString(commandlineArgs[1]);
+        File mainClassFile = getFileFromString(sourceDir.getAbsolutePath() + File.separator + commandlineArgs[2]);
 
         return Bundler.create(sourceDir, mainClassFile, new FileDataExtractor());
     }
