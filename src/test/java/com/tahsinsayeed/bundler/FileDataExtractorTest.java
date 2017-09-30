@@ -8,8 +8,11 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class FileDataExtractorTest {
 
@@ -76,6 +79,17 @@ public class FileDataExtractorTest {
         assertEquals(EOL + EOL +
                 "public class This{" + EOL +
                 "}" + EOL, data.content);
+
+    }
+
+    @Test
+    public void testExtractFileDataFromFile_OnIOExceptionReturnsEmptyFileData(){
+        Path wrongFile = mock(Path.class);
+        when(wrongFile.getFileSystem()).thenThrow(IOException.class);
+
+        assertEquals(FileData.EMPTY, new FileDataExtractor().extractFileData(wrongFile));
+
+
 
     }
 }

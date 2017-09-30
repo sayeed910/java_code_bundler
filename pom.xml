@@ -6,7 +6,7 @@
 
     <groupId>com.tahsinsayeed</groupId>
     <artifactId>bundler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -26,13 +26,30 @@
             <version>2.9.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>23.0</version>
-        </dependency>
-
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                    <manifest>
+                        <addClasspath>true</addClasspath>
+                        <classpathPrefix>lib/</classpathPrefix>
+                        <mainClass>com.tahsinsayeed.bundler.App</mainClass>
+                    </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>

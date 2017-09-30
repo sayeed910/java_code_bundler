@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 public class FileDataExtractor {
@@ -16,6 +17,7 @@ public class FileDataExtractor {
 
     public FileData extractFileData(Path file) {
 
+        Logger.getGlobal().info("Extracting content from " + file.getFileName());
         header = new StringBuilder(300);
         content = new StringBuilder(1000);
 
@@ -23,10 +25,9 @@ public class FileDataExtractor {
             List<String> lines = Files.readAllLines(file);
             return getFileDataFrom(lines);
         } catch (IOException e) {
-            e.printStackTrace();
+            return FileData.EMPTY;
         }
 
-        return null;
     }
 
     private FileData getFileDataFrom(List<String> lines) {
@@ -42,6 +43,14 @@ public class FileDataExtractor {
         return new FileData(header.toString(), content.toString());
     }
 
+    private boolean isPackageDeclaration(String line) {
+        return line.trim().startsWith("package");
+    }
+
+    private boolean isHeaderLine(String line) {
+        return line.trim().startsWith("import");
+    }
+
     private String getRequiredContentFrom(String line) {
         if (isClassDeclaration(line))
             return removePublicDeclarationFrom(line);
@@ -49,6 +58,14 @@ public class FileDataExtractor {
             return removePublicDeclarationFrom(line);
         else
            return line;
+    }
+
+    private boolean isClassDeclaration(String line) {
+        return line.trim().startsWith("public class");
+    }
+
+    private boolean isInterfaceDeclaration(String line) {
+        return line.trim().startsWith("public interface");
     }
 
     private String removePublicDeclarationFrom(String line) {
@@ -61,26 +78,19 @@ public class FileDataExtractor {
     }
 
 
-    private boolean isInterfaceDeclaration(String line) {
-        return line.contains("public interface");
-    }
-
-    private boolean isHeaderLine(String line) {
-        return line.trim().startsWith("import");
-    }
-
     public FileData extractFileDataFromMainFile(Path mainFile) {
         header = new StringBuilder(300);
         content = new StringBuilder(1000);
+
+        Logger.getGlobal().info("Extracting content from the main file " + mainFile.getFileName());
 
         try {
             List<String> lines = Files.readAllLines(mainFile);
             return getMainFileDataFrom(lines);
         } catch (IOException e) {
-            e.printStackTrace();
+            return FileData.EMPTY;
         }
 
-        return null;
     }
 
     private FileData getMainFileDataFrom(List<String> lines) {
@@ -92,14 +102,6 @@ public class FileDataExtractor {
                 content.append(line).append(EOL);
         }
         return new FileData(header.toString(), content.toString());
-    }
-
-    private boolean isClassDeclaration(String line) {
-        return line.contains("public class");
-    }
-
-    private boolean isPackageDeclaration(String line) {
-        return line.trim().startsWith("package");
     }
 
 

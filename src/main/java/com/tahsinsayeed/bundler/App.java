@@ -1,42 +1,48 @@
 package com.tahsinsayeed.bundler;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.ConsoleHandler;
+import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class App {
     private final static Logger logger = Logger.getLogger(App.class.getName());
-    static {
-        logger.addHandler(new ConsoleHandler());
-    }
-
 
     private final Bundler codeBundler;
-    private final FileWriter bundledCodeWriter;
+    private final File output;
 
-    App(Bundler codeBundler, FileWriter bundledCodeWriter) {
+    App(Bundler codeBundler, File bundledCodeWriter) {
         this.codeBundler = codeBundler;
-        this.bundledCodeWriter = bundledCodeWriter;
+        this.output = bundledCodeWriter;
     }
 
     public static void main(String[] args) {
         try {
-            App application = new ApplicationBuilder(args).build();
+            Args argumentParser = Args.get(args);
+            File sourceDirectory = argumentParser.getSourceDirectory();
+            File mainClassFile = argumentParser.getMainClassFile();
+
+            ApplicationBuilder applicationBuilder = new ApplicationBuilder(
+                    sourceDirectory, mainClassFile);
+
+            App application = applicationBuilder.build();
             application.start();
         } catch (Exception e) {
-            logger.severe("" + e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
-    private void start() throws IOException {
+    private void start(){
         String bundledCode = codeBundler.bundle();
-        try {
-            bundledCodeWriter.write(bundledCode);
-            bundledCodeWriter.flush();
-            bundledCodeWriter.close();
+        Logger.getGlobal().info("Writing output to " + output.getAbsolutePath());
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(output))) {
+            writer.write(bundledCode);
+            writer.flush();
         } catch (IOException e) {
-            throw new IOException("Could not write to output file");
+            throw new RuntimeException("Could not write to output file", e);
         }
     }
 }

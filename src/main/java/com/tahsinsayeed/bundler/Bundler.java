@@ -3,14 +3,15 @@ package com.tahsinsayeed.bundler;
 import java.io.File;
 import java.io.FilenameFilter;
 
+import static java.util.Objects.requireNonNull;
+
 class Bundler{
 
     private final File sourceDir;
     private final File mainClassFile;
     private final FileDataExtractor extractor;
-    private File[] filesInSourceDir;
 
-    public Bundler(File sourceDirectory, File mainClassFile, FileDataExtractor extractor) {
+    private Bundler(File sourceDirectory, File mainClassFile, FileDataExtractor extractor) {
         this.sourceDir = sourceDirectory;
         this.mainClassFile = mainClassFile;
         this.extractor = extractor;
@@ -20,13 +21,7 @@ class Bundler{
         return new Bundler(sourceDir, mainClassFile, extractor);
     }
 
-    public String getSourceDirPath() {
-        return sourceDir.getAbsolutePath();
-    }
 
-    public String getMainClassFileName() {
-        return mainClassFile.getAbsolutePath();
-    }
 
     public String bundle() {
         //TODO: Add support for bundling files inside subdirectory
@@ -38,11 +33,9 @@ class Bundler{
         header.append(mainData.header);
         content.append(mainData.content);
 
+        File[] filesInSourceDir = sourceDir.listFiles((file, s) -> s.endsWith(".java"));
 
-        filesInSourceDir = sourceDir.listFiles((file, s) -> s.endsWith(".java"));
-
-
-
+        requireNonNull(filesInSourceDir, "The provided source directory contains no java source file");
         for (File currentFile: filesInSourceDir){
               if (!currentFile.equals(mainClassFile)){
                   FileData data = extractor.extractFileData(currentFile.toPath());
