@@ -61,7 +61,7 @@ public class FileDataExtractor {
     }
 
     private boolean isClassDeclaration(String line) {
-        return line.trim().startsWith("public class");
+        return line.trim().startsWith("public class") || line.trim().startsWith("public abstract class");
     }
 
     private boolean isInterfaceDeclaration(String line) {
